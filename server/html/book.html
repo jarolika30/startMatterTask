@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset = "utf-8" />
+	<title>AllBooks</title>
+	<style>
+		body{
+			background:darkblue;
+			color:white;
+			font-size:20px;
+			text-align: center;
+		}
+		#info{
+			width:50%;
+			padding:5px;
+			margin-left:10px;
+			float:left;
+		}
+		#look{
+			float:left;
+			padding:5px;
+			margin-left:10px;
+		}
+		#tb{
+			text-align: left;
+			margin:0 auto;
+			width:1000px;
+			height:500px;
+			border:2px dotted white;
+			background:blue;
+
+		}
+		#book{
+			height:200px;
+		}
+		#home{
+			display:block;
+			float:left;
+			width:100px;
+			border:2px solid darkblue;
+			border-radius:8px;
+			margin-left:5px;
+		}
+		
+		#home:hover, #home:active{
+			box-shadow: 0 0 20px lightblue;
+		}
+		
+		#sub{
+			margin-left:200px;
+		}
+		
+	
+	</style>
+	
+</head>
+<body>
+	<a href="/home"><img id ="home" src="img/book.jpg"></a>
+	<h1>Online-Library</h1>
+	
+	<div id = 'all'>
+		<div id = "tb">
+			<div id='look'><img id = "book" {%img%}</div>
+			<div id ='info'>
+				<h4>Name: {%name%}</h4>
+			    <h4>Author: {%id_author%}</h4>
+			    <h4>Publisher:{%publicher%}</h4>
+			    <h4>Year: {%year_publish%}</h4>
+			    <h4>Pages:{%pages%}</h4>
+		    </div>
+			<p>{%description%}</p>
+			</table>
+		</div>
+
+	</div>
+	
+</body>
+</html>

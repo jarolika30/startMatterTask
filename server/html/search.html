@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset = "utf-8" />
+	<title>SearchPage</title>
+	<style>body{
+		background:darkblue;
+		color:white;
+		font-size:30px;
+		text-align: center;
+		}
+		div{
+			
+		}
+		form{
+			text-align: left;
+			margin:0 auto;
+			width:700px;
+			border:2px dotted white;
+			background:blue;
+
+		}
+		img{
+			display:block;
+			float:left;
+			width:100px;
+			border:2px solid darkblue;
+			border-radius:8px;
+			margin-left:5px;
+		}
+		img:hover, img:active{
+			box-shadow: 0 0 20px lightblue;
+		}
+		input{
+			margin:5px;
+
+		}
+		input:hover, input:active{
+			border:2px solid darkblue;
+		}
+		#sub{
+			margin-left:200px;
+		}
+		label{
+			margin-left:200px;
+		}
+	</style>
+</head>
+<body>
+	<a href="/home"><img src="img/book.jpg"></a>
+	<h1>Online-Library</h1>
+	<h2></h2>
+	<div id = 'forSearch'>
+		<form method="POST" action = "/searchAction">
+			<table>
+				<tr><td><label>Author:<input type ="text" name = "author"></label></td></tr>
+				<tr><td><label>Publisher:<input type="text" name = "publisher"></label></td></tr>
+				<tr><td><label>Year of publishing:<input type = "text" name = "year"></label></td></tr>
+				<tr><td><label>Keywords:<input type = "text" name = "keywords"></label></td></tr>
+				<tr><td><input id = "sub" type="submit" value ="search"></td></tr>
+			</table>
+		</form>
+
+	</div>
+	
+</body>
+</html>
