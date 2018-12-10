@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset = "utf-8" />
+	<title>HomePage</title>
+	<style>
+		body{
+			background:lightblue;
+			color:black;
+			font-size:30px;
+			text-align: center;
+			border:3px solid darkblue;
+		}
+		
+		#all{
+			width:900px;
+			margin:100px;
+			
+		    
+		}
+		a{
+			color:black;
+			text-decoration:none;
+		}
+		a:hover,a:active{
+			color:blue;
+		}
+		img{
+			height:100px;
+		}
+		span{
+			text-decoration:underline;
+			color:black;
+
+		}
+		table{
+			margin:0px auto;
+			border:3px solid blue;
+		}
+		td{
+			padding:10px;
+		}
+		h1{
+			color:blue;
+		}
+		p{
+			text-align: left;
+		}
+		
+		
+		
+	</style>
+</head>
+<body>
+	<div id = 'all'>
+		<h1>Books application API documentation</h1>
+		
+		<table>
+			<tr><th>Input url</th><th>Result page</th><th>Description</th><th>Kind of request</th></tr>
+			<tr><td><span>Start point:</span></td><td> http://127.0.0.1:1337</td><td>to run program</td><td>GET</td></tr>
+			<tr><td>/</td><td><img src="img/start.png"></td><td>to choose action</td><td>GET</td></tr>
+			<tr><td>/home</td><td><img src="img/start.png"></td><td>to choose action</td><td>GET</td></tr>
+			<tr><td>/books</td><td><img src="img/allbooks.png"></td><td>to get all books</td><td>GET</td></tr>
+			<tr><td>/book?id=2</td><td><img src="img/book.png"></td><td>to get more detail</td><td>GET</td></tr>
+			<tr><td>/search</td><td><img src="img/search.png"></td><td>to start searching</td><td>POST</td></tr>
+			<tr><td>/searchAction</td><td><img src="img/result.png"></td><td>to get results</td><td>GET</td></tr>
+			<tr><td>Error</td><td><img src="img/empty.png"></td><td>if you didn`t fill the form</td><td>GET</td></tr>
+			<tr><td>Error</td><td><img src="img/falseId.png"></td><td>if book id is not exist</td><td>GET</td></tr>
+			<tr><td>/bbb ...</td><td>URL was not found on the server!</td><td>if the path is wrong</td><td>GET</td></tr>
+		</table>
+		<h3>Rules of searching:</h3>
+		<p>
+			To start your search you must fill out the form:<br/><br/>
+			a) to find books by author - input his lastname;<br/>
+			b) to find books by publisher - input name of publisher;<br/>
+			c) to find books by year of bublisher - input a number;<br/>
+			d) to find books by keywords - input one keyword or more keywords separated by a white space;
+			e) if you fill many fields, searching will be by only first field!
+		</p>
+
+
+		</p>
+
+		
+
+	</div>
+	
+</body>
+</html>

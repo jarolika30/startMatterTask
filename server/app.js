@@ -48,6 +48,8 @@ const server = http.createServer((req, res)=>{
     }//we want the page of all books
     else if(pathName === '/books'){
     	res.writeHead(200, { 'Content-type': 'text/html'});
+    	//prepare sql query
+
     	const query = "SELECT Books.id_book as id_book, Books.name as name, Author.name +' '  + Author.lastname as id_author, Books.year_publish as year_publish FROM Books" +
     	" join Author on Books.id_author = Author.id_author";
 
@@ -55,13 +57,20 @@ const server = http.createServer((req, res)=>{
     		
 			var someVar = [];
 
+			//request execution
+
 			sql.query(connectionString, query, function(err, rows){
 			  if(err) {
 			    throw err;
 			  } else {
+
+			  	//recieve sql data
+
 			    setValue(rows);
 			  }
 			});
+
+			// function for filling html-page of data and forming response
 
 			function setValue(value) {
 			  someVar = value;
@@ -73,15 +82,21 @@ const server = http.createServer((req, res)=>{
 			  	str += '<td><a href="/book?id=' + someVar[i].id_book + 
 			  	'"><button>Show detail</button></a></td></tr>';
 			  }
-			  //const oneBook = someVar[0];
+			  
+			  // replace variable on the html-page 
+
 			  let output = data.replace(/{%str%}/g,str);
 			  
+			  //send response
+
 			  res.end(output);
 			}
 		})
     }//we want to see detail
+
     else if(pathName === '/book' && id !== undefined){
     	res.writeHead(200, { 'Content-type': 'text/html'});
+
     	const query = "Select Books.name as name,  Author.name +' '  + Author.lastname as id_author, Publisher.name as " + 
     	"id_publish, Books.year_publish as year_publish, Books.number_pages as number_pages, Books.book_description as " + 
     	"book_description, Books.picture as picture from Books join Author on Books.id_author = Author.id_author " + 
@@ -113,77 +128,104 @@ const server = http.createServer((req, res)=>{
 				  output = output.replace(/{%img%}/g,'src="img/' + oneBook.picture + '"');
 				  res.end(output);
 				}else{
-					res.end("Not found!");
+					// if such book  doesn`t exist, we send page Not Found
+
+					res.writeHead(200, { 'Content-type': 'text/html'});
+    				fs.readFile(`${__dirname}/html/notFound.html`, 'utf-8', (err, data) => {
+	    				let str = 'Page not found!'
+	    				let output = data.replace(/{%str%}/g,str);
+				          
+						res.end(output);
+					})
 				}
 			}
 		})
     }
     //we want to search books
-     else if(pathName === '/search'){
-    	res.writeHead(200, { 'Content-type': 'text/html'});
-    	fs.readFile(`${__dirname}/html/search.html`, 'utf-8', (err, data) => {
-			res.end(data);
-		})
-    }//recieve data from form
-    else if(pathName === '/searchAction'){
-    	var stringData = '';
-    	const query1 = "SELECT Books.id_book as id_book, Books.name as name, Author.name +' '  + Author.lastname as id_author, Books.year_publish as year_publish FROM Books" +
-      " join Author on Books.id_author = Author.id_author where Books.year_publish = ?";
 
-      const query2 = "SELECT Books.id_book as id_book, Books.name as name, Author.name +' '  + Author.lastname as id_author, Books.year_publish as year_publish FROM Books" +
-      " join Author on Books.id_author = Author.id_author where Author.lastname = ?";
+	     else if(pathName === '/search'){
+	    	res.writeHead(200, { 'Content-type': 'text/html'});
 
-      const query3 = "SELECT Books.id_book as id_book, Books.name as name, Author.name +' '  + Author.lastname as id_author, Books.year_publish as year_publish FROM Books" +
-      " join Author on Books.id_author = Author.id_author join Publisher on Books.id_publish = Publisher.id_publisher where Publisher.name = ?";
+	    	fs.readFile(`${__dirname}/html/search.html`, 'utf-8', (err, data) => {
+				res.end(data);
+			})
+	    }//recieve data from form
+	    //and send results of searching
+	    else if(pathName === '/searchAction'){
+	    	var stringData = '';
 
-      var query4 = "select DISTINCT Books.id_book as id_book, Books.name as name, Author.name + ' ' + " + "Author.lastname as id_author, Books.year_publish as year_publish from Books " + 
-		 "join Author on Books.id_author = Author.id_author join ForSearch on ForSearch.id_book " + 
-		 "= Books.id_book where ";
-    	req.on('data', function(chunk){
-    		stringData+=chunk;
-		});
-		var ob;
-    	req.on('end', function() { 
-            console.log(stringData + "<-Posted Data Test"); 
-			var ob = (querystring.parse(stringData)); 
-			console.log(ob);
-			console.log(ob.year);
-			viewPos(ob)
-			
-     	}); 
-     	function viewPos(ob){
-     		console.log(ob);
-			console.log(ob.year);
-			if(ob.author != ''){
-				var author = ob.author;
-				res.writeHead(200, { 'Content-type': 'text/html'});
-    			fs.readFile(`${__dirname}/html/books.html`, 'utf-8', (err, data) => {
-					var someVar = [];
+	    	const query1 = "SELECT Books.id_book as id_book, Books.name as name, Author.name +' '  + Author.lastname as id_author, Books.year_publish as year_publish FROM Books" +
+	      " join Author on Books.id_author = Author.id_author where Books.year_publish = ?";
 
-			        sql.query(connectionString, query2,[author], function(err, rows){
-			          if(err) {
-			            throw err;
-			          } else {
-			            setValue(rows);
-			          }
-			        });
-			        function setValue(value) {
-			          someVar = value;
-			          var str ='';
-			          for(var i = 0; i < someVar.length; i++){
-			            str += '<td>' + someVar[i].name + '</td>';
-			            str += '<td>' + someVar[i].id_author + '</td>';
-			            str += '<td>'+ someVar[i].year_publish + '</td>';
-			            str += '<td><a href="/book?id=' + someVar[i].id_book + 
-			            '"><button>Show detail</button></a></td></tr>';
-			          }
-			          //const oneBook = someVar[0];
-			          let output = data.replace(/{%str%}/g,str);
-			          
-			          res.end(output);
-			        }
-				})
-			}
+	      const query2 = "SELECT Books.id_book as id_book, Books.name as name, Author.name +' '  + Author.lastname as id_author, Books.year_publish as year_publish FROM Books" +
+	      " join Author on Books.id_author = Author.id_author where Author.lastname = ?";
+
+	      const query3 = "SELECT Books.id_book as id_book, Books.name as name, Author.name +' '  + Author.lastname as id_author, Books.year_publish as year_publish FROM Books" +
+	      " join Author on Books.id_author = Author.id_author join Publisher on Books.id_publish = Publisher.id_publisher where Publisher.name = ?";
+
+	      var query4 = "select DISTINCT Books.id_book as id_book, Books.name as name, Author.name + ' ' + " + "Author.lastname as id_author, Books.year_publish as year_publish from Books " + 
+			 "join Author on Books.id_author = Author.id_author join ForSearch on ForSearch.id_book " + 
+			 "= Books.id_book where ";
+
+			 //on event Data, we fill variable stringData of this data
+
+	    	req.on('data', function(chunk){
+	    		stringData+=chunk;
+			});
+
+			var ob;
+	    	req.on('end', function() { 
+
+	            //console.log(stringData + "<-Posted Data Test"); 
+	            //recieve Object from stringData
+
+				var ob = (querystring.parse(stringData)); 
+
+				//call function for processing of results and sending response
+
+				viewPos(ob)
+				
+	     	}); 
+	     	//depending on incoming parameters we begin searching books in Database, then form page and send response
+
+	     	function viewPos(ob){
+	     		console.log(ob);
+				console.log(ob.year);
+
+				// case when the key author is not empty, we search books on author
+
+				if(ob.author != ''){
+					var author = ob.author;
+					res.writeHead(200, { 'Content-type': 'text/html'});
+	    			fs.readFile(`${__dirname}/html/books.html`, 'utf-8', (err, data) => {
+						var someVar = [];
+
+				        sql.query(connectionString, query2,[author], function(err, rows){
+				          if(err) {
+				            throw err;
+				          } else {
+				            setValue(rows);
+				          }
+				        });
+
+				        function setValue(value) {
+				          someVar = value;
+				          var str ='';
+				          for(var i = 0; i < someVar.length; i++){
+				            str += '<td>' + someVar[i].name + '</td>';
+				            str += '<td>' + someVar[i].id_author + '</td>';
+				            str += '<td>'+ someVar[i].year_publish + '</td>';
+				            str += '<td><a href="/book?id=' + someVar[i].id_book + 
+				            '"><button>Show detail</button></a></td></tr>';
+				          }
+				          
+				          let output = data.replace(/{%str%}/g,str);
+				          
+				          res.end(output);
+				        }
+					})
+				}
+				// case when the key publisher is not empty, we search books on publisher
 			else if(ob.publisher != ''){
                var publisher = ob.publisher;
 				res.writeHead(200, { 'Content-type': 'text/html'});
@@ -207,13 +249,13 @@ const server = http.createServer((req, res)=>{
 			            str += '<td><a href="/book?id=' + someVar[i].id_book + 
 			            '"><button>Show detail</button></a></td></tr>';
 			          }
-			          //const oneBook = someVar[0];
+			          
 			          let output = data.replace(/{%str%}/g,str);
 			          
 			          res.end(output);
 			        }
 				})
-			}
+			}// case when the key year is not empty, we search books on year
      		else if(ob.year != ''){
      			var year = ob.year;
 				res.writeHead(200, { 'Content-type': 'text/html'});
@@ -237,19 +279,28 @@ const server = http.createServer((req, res)=>{
 			            str += '<td><a href="/book?id=' + someVar[i].id_book + 
 			            '"><button>Show detail</button></a></td></tr>';
 			          }
-			          //const oneBook = someVar[0];
+			          
 			          let output = data.replace(/{%str%}/g,str);
 			          
 			          res.end(output);
 			        }
 				})
+				// case when the key keywords is not empty, we search books on keywords
 			}else if(ob.keywords != ''){
+				//make array from string and delete white spaces from begin and end
+
 				var mas = ob.keywords.trim().split(' ');
-				console.log(mas);
+
+				//form necessary ыйд йгукн
+
 				for(var i = 0; i < mas.length; i++){
+
+					//filter empty values
+
 					if(mas[i] == ''){
 						continue;
-					}
+					}//if element is not last then
+					
 					if(i != (mas.length - 1)){
 						query4 += "ForSearch.key_value = '" + mas[i] + "' or " ;
 					}else{
@@ -277,33 +328,39 @@ const server = http.createServer((req, res)=>{
 			            str += '<td><a href="/book?id=' + someVar[i].id_book + 
 			            '"><button>Show detail</button></a></td></tr>';
 			          }
-			          //const oneBook = someVar[0];
+			          
 			          let output = data.replace(/{%str%}/g,str);
 			          
 			          res.end(output);
 			        }
 				})
-				//console.log(query4);
-
+				
 			}else{
+
+				//send page Not found, if form was not fiiled
+
 				res.writeHead(200, { 'Content-type': 'text/html'});
     			fs.readFile(`${__dirname}/html/notFound.html`, 'utf-8', (err, data) => {
-					res.end(data);
+    				let str = 'No matches found. Your form was empty!';
+    				let output = data.replace(/{%str%}/g,str);
+			          
+					res.end(output);
 				})
 			}
      	}
 
      	
-		
-
-    }
+	}
 	// URL NOT FOUND
+
     else {
         res.writeHead(404, { 'Content-type': 'text/html'});
         res.end('URL was not found on the server!');
     }
 })
+
 //keep listening on a certain port and on a certain IP address
+
 server.listen(1337, '127.0.0.1', () => {
     console.log('Listening for requests now');
 });
