@@ -18,7 +18,8 @@ const server = http.createServer((req, res)=>{
 	var dataRes;
 	const pathName = url.parse(req.url, true).pathname;
 	const id = url.parse(req.url, true).query.id;
-	
+	const idB = url.parse(req.url, true).query.idB;
+
 
 	/*var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
@@ -125,6 +126,7 @@ const server = http.createServer((req, res)=>{
 				  output = output.replace(/{%year_publish%}/g,oneBook.year_publish);
 				  output = output.replace(/{%pages%}/g,oneBook.number_pages);
 				  output = output.replace(/{%description%}/g,oneBook.book_description);
+				  output = output.replace(/{%id_book%}/g,id);
 				  output = output.replace(/{%img%}/g,'src="img/' + oneBook.picture + '"');
 				  res.end(output);
 				}else{
@@ -346,7 +348,8 @@ const server = http.createServer((req, res)=>{
 			        }
 				})
 				
-			}else{
+			}
+			else{
 
 				//send page Not found, if form was not fiiled
 
@@ -361,7 +364,64 @@ const server = http.createServer((req, res)=>{
      	}
 
      	
-	}
+	}//to see comments of a book
+	else if(pathName === '/comments' && idB !== undefined){
+					res.writeHead(200, { 'Content-type': 'text/html'});
+			    	//prepare sql query
+
+			    	const query = "SELECT Books.picture as picture,UserLib.login_user as login_user, Comment.comment_text as comment_text from Comment join UserLib on Comment.id_user = UserLib.id_user join Books on Books.id_book = Comment.id_book where Comment.id_book = ?";
+
+					fs.readFile(`${__dirname}/html/comments.html`, 'utf-8', (err, data) => {
+			    		var comments = [];
+						
+
+						sql.query(connectionString, query, [idB],function(err, rows){
+						  if(err) {
+						    throw err;
+						  } else {
+						    setValue(rows);
+						  }
+						});
+
+						function setValue(value) {
+						  comments = value;
+
+						  // comment = comments[0];
+						  if(comments !== undefined && Object.keys(comments).length !== 0){
+							  
+                              var str ='';
+                              //console.log(comments);
+					            str += '<div id="look"><img id = "book" src = "img/' + comments[0].picture + '"></div><div id = "clear"></div>';
+					            str += '<div id="comment"><a href="/mycomment?id=' + idB + '">Оставить свой отзыв</a></div>' + '<div>';
+								  for(var i = 0; i < comments.length; i++){
+								  	str += '<p>' + comments[i].login_user + '</p><hr/>';
+								  	str += '<p>' + comments[i].comment_text + '</p>';
+								  	
+								  }
+								  str += '</div>';
+
+								  // replace variable on the html-page 
+
+								  let output = data.replace(/{%str%}/g,str);
+								  
+								  //send response
+
+								  
+							  res.end(output);
+							}else{
+								// if such book  doesn`t exist, we send page Not Found
+
+								res.writeHead(200, { 'Content-type': 'text/html'});
+			    				fs.readFile(`${__dirname}/html/notFound.html`, 'utf-8', (err, data) => {
+				    				let str = 'Page not found!'
+				    				let output = data.replace(/{%str%}/g,str);
+							          
+									res.end(output);
+								})
+							}
+						}
+					})
+				}
 	// URL NOT FOUND
 
     else {
