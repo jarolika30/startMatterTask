@@ -176,21 +176,32 @@ const server = http.createServer((req, res)=>{
 			var ob;
 	    	req.on('end', function() { 
 
-	            //console.log(stringData + "<-Posted Data Test"); 
+	            
 	            //recieve Object from stringData
 
 				var ob = (querystring.parse(stringData)); 
 
-				//call function for processing of results and sending response
-
-				viewPos(ob)
 				
+				//console.log(ob);
+
+				//if  ob is not empty, run the function which will process request from form.
+				//if  ob  is empty, redirect to page with form
+
+				if(Object.keys(ob).length !== 0){
+					viewPos(ob);
+				}else{
+					res.writeHead(200, { 'Content-type': 'text/html'});
+
+			    	fs.readFile(`${__dirname}/html/search.html`, 'utf-8', (err, data) => {
+						res.end(data);
+					})
+				}
 	     	}); 
 	     	//depending on incoming parameters we begin searching books in Database, then form page and send response
 
 	     	function viewPos(ob){
-	     		console.log(ob);
-				console.log(ob.year);
+	     		//console.log(ob);
+				//console.log(ob.year);
 
 				// case when the key author is not empty, we search books on author
 
