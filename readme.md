@@ -1,6 +1,6 @@
 # Book service
 
-This program is a simple REST service for searching books. 
+This program is a server for searching books. 
 It allows you to perform the following actions:
 
 - getting a list of all books;
