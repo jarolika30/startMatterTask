@@ -31,6 +31,7 @@ On command line, type in the following commands:
 
 ```
    cd "path to the folder 'server' "
+   npm install
    node app.js
    
 ```
